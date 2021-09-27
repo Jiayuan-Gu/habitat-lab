@@ -4,6 +4,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+from copy import deepcopy
 import hashlib
 import os
 import os.path as osp
@@ -179,6 +180,7 @@ def convert_legacy_cfg(obj_list):
         return obj_list
 
     def convert_fn(obj_dat):
+        obj_dat = deepcopy(obj_dat)
         fname = "/".join(obj_dat[0].split("/")[-2:])
         if ".urdf" in fname:
             obj_dat[0] = osp.join("data/replica_cad/urdf", fname)

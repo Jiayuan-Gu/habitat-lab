@@ -296,9 +296,12 @@ class BaseVelAction(SimulatorTaskAction):
             # Check if in the new robot state the arm collides with anything. If so
             # we have to revert back to the previous transform
             self._sim.internal_step(-1)
-            colls = self._sim.get_collisions()
+            # colls = self._sim.get_collisions()
+            # did_coll, _ = rearrange_collision(
+            #     colls, self._sim.snapped_obj_id, False
+            # )
             did_coll, _ = rearrange_collision(
-                colls, self._sim.snapped_obj_id, False
+                self._sim, True, False
             )
             if did_coll:
                 # Don't allow the step, revert back.

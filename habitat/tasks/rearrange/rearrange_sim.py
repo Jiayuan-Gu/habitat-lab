@@ -228,14 +228,18 @@ class RearrangeSim(HabitatSim):
         return ret
 
     def clear_objs(self, art_names=None):
+        rigid_obj_mgr = self.get_rigid_object_manager()
         for scene_obj in self.scene_obj_ids:
-            self.remove_object(scene_obj)
+            # self.remove_object(scene_obj)
+            rigid_obj_mgr.remove_object_by_id(scene_obj)
         self.scene_obj_ids = []
 
-        if art_names is None or self.cached_art_obj_ids != art_names:
-            ao_mgr = self.get_articulated_object_manager()
-            ao_mgr.remove_all_objects()
-            self.art_objs = []
+        # if art_names is None or self.cached_art_obj_ids != art_names:
+        ao_mgr = self.get_articulated_object_manager()
+        for art_obj in self.art_objs:
+            ao_mgr.remove_object_by_id(art_obj.object_id)
+        # ao_mgr.remove_all_objects()
+        self.art_objs = []
 
     def _add_objs(self, ep_info):
         art_names = [x[0] for x in ep_info["art_objs"]]
