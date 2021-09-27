@@ -344,7 +344,13 @@ class HabitatSim(habitat_sim.Simulator, Simulator):
             self.habitat_config.ACTION_SPACE_CONFIG
         )(self.habitat_config).get()
 
-        return habitat_sim.Configuration(sim_config, [agent_config])
+        return habitat_sim.Configuration(
+            sim_config,
+            [agent_config],
+            force_create_renderer=self.habitat_config.get(
+                "force_create_renderer", False
+            ),
+        )
 
     @property
     def sensor_suite(self) -> SensorSuite:
