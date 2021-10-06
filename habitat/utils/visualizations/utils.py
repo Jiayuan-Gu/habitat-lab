@@ -172,8 +172,13 @@ def tile_images(render_obs_images: List[np.ndarray]) -> np.ndarray:
     col = []
     for im in render_obs_images[1:]:
         if cur_y + im.shape[0] <= max_height:
-            col.append(im)
-            cur_y += im.shape[0]
+            if len(col) > 0 and col[-1].shape[1] != im.shape[1]:
+                img_cols.append(col)
+                col = [im]
+                cur_y = im.shape[0]
+            else:
+                col.append(im)
+                cur_y += im.shape[0]
         else:
             img_cols.append(col)
             col = [im]
