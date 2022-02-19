@@ -242,6 +242,8 @@ class VectorEnv:
                         # habitat.RLEnv
                         observations, reward, done, info = env.step(**data)
                         if auto_reset_done and done:
+                            # Follow stable-baseline3
+                            info["terminal_observation"] = observations
                             observations = env.reset()
                         with profiling_wrapper.RangeContext(
                             "worker write after step"
@@ -550,7 +552,8 @@ class VectorEnv:
     ) -> Union[np.ndarray, None]:
         r"""Render observations from all environments in a tiled image."""
         for write_fn in self._connection_write_fns:
-            write_fn((RENDER_COMMAND, (args, {"mode": "rgb", **kwargs})))
+            # write_fn((RENDER_COMMAND, (args, {"mode": "rgb", **kwargs})))
+            write_fn((RENDER_COMMAND, (args, {"mode": mode, **kwargs})))
         images = [read_fn() for read_fn in self._connection_read_fns]
         tile = tile_images(images)
         if mode == "human":
@@ -559,7 +562,8 @@ class VectorEnv:
             cv2 = try_cv2_import()
 
             cv2.imshow("vecenv", tile[:, :, ::-1])
-            cv2.waitKey(1)
+            # cv2.waitKey(1)
+            cv2.waitKey(kwargs.get("delay", 0))
             return None
         elif mode == "rgb_array":
             return tile
