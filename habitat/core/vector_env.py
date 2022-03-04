@@ -292,6 +292,8 @@ class VectorEnv:
 
         except KeyboardInterrupt:
             logger.info("Worker KeyboardInterrupt")
+        except Exception as err:
+            logger.exception(err)
         finally:
             if child_pipe is not None:
                 child_pipe.close()
@@ -395,6 +397,12 @@ class VectorEnv:
         self._connection_write_fns[index_env]((RESET_COMMAND, None))
         results = [self._connection_read_fns[index_env]()]
         return results
+
+    def async_reset_at(self, index_env: int):
+        self._connection_write_fns[index_env]((RESET_COMMAND, None))
+
+    def wait_reset_at(self, index_env: int):
+        return self._connection_read_fns[index_env]()
 
     def async_step_at(
         self, index_env: int, action: Union[int, str, Dict[str, Any]]
