@@ -350,9 +350,9 @@ class HabitatSim(habitat_sim.Simulator, Simulator):
         return habitat_sim.Configuration(
             sim_config,
             [agent_config],
-            force_create_renderer=self.habitat_config.get(
-                "force_create_renderer", False
-            ),
+            # force_create_renderer=self.habitat_config.get(
+            #     "force_create_renderer", False
+            # ),
         )
 
     @property
