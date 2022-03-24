@@ -293,6 +293,9 @@ class VectorEnv:
         except KeyboardInterrupt:
             logger.info("Worker KeyboardInterrupt")
         except Exception as err:
+            if isinstance(env.unwrapped, habitat.RLEnv):
+                episode_id = env.current_episode.episode_id
+                logger.info("Error happens at episode {}".format(episode_id))
             logger.exception(err)
         finally:
             if child_pipe is not None:
