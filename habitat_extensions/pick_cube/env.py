@@ -71,9 +71,13 @@ def convert_observation_to_space(observation, prefix=""):
 class PickCubeEnv(gym.Env):
     _sim: PickCubeSim
 
-    def __init__(self, obs_mode="rgbd"):
+    def __init__(self, obs_mode="rgbd", include_apt=False):
         self.obs_mode = obs_mode
         self._config = self.get_config(obs_mode=obs_mode)
+        if include_apt:
+            self._config.defrost()
+            self._config.SIMULATOR.INCLUDE_APT = True
+            self._config.freeze()
         self._viewer = None
 
         self._sim = make_sim(
@@ -257,13 +261,14 @@ class PickCubeEnv(gym.Env):
 
 def main():
     # env = PickCubeEnv()
-    env = gym.make("HabitatPickCube-v0")
+    # env = gym.make("HabitatPickCube-v0")
+    env = gym.make("HabitatPickCube-v0", include_apt=True)
 
     env.seed(0)  # specify a seed for randomness
     obs = env.reset()
     done = False
     while not done:
-        action = env.action_space.sample() * 0
+        action = env.action_space.sample() * 1
         obs, reward, done, info = env.step(action)
         print(obs["agent"])
         print(obs["extra"])

@@ -180,6 +180,10 @@ class PickCubeSim(HabitatSim):
         self.rigid_objs["ground"] = self.ground
         self.rigid_objs["cube"] = self.cube
 
+        if self.habitat_config.get("INCLUDE_APT", False):
+            self.scene = self.add_viz_obj(mn.Vector3(0, 0, 0), template_name="frl_apartment_stage_pvizplan_full")
+            self.rigid_objs["scene"] = self.scene
+
     def _remove_rigid_objects(self):
         rigid_obj_mgr = self.get_rigid_object_manager()
         for handle, obj in self.rigid_objs.items():
