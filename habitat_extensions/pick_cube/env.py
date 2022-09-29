@@ -262,10 +262,11 @@ class PickCubeEnv(gym.Env):
 def main():
     # env = PickCubeEnv()
     # env = gym.make("HabitatPickCube-v0")
-    env = gym.make("HabitatPickCube-v0", include_apt=True)
+    env = gym.make("HabitatPickCube-v0", include_apt=False)
 
     env.seed(0)  # specify a seed for randomness
     obs = env.reset()
+    key = env.render()
     done = False
     while not done:
         action = env.action_space.sample() * 1

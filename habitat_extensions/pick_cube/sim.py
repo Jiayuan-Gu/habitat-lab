@@ -4,6 +4,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import os
 import os.path as osp
 from collections import OrderedDict
 from typing import Dict, List, Optional, Union
@@ -39,6 +40,9 @@ def make_render_only(obj):
 @registry.register_simulator(name="PickCubeSim-v0")
 class PickCubeSim(HabitatSim):
     # ROBOT_URDF_PATH = "data/robots/franka_panda/panda_arm_hand.urdf"
+    YCB_DIR = (
+        "/home/jiayuan/projects/github/habitat-lab/data/objects/ycb/configs"
+    )
 
     def __init__(self, config: Config):
         super().__init__(config)
@@ -70,6 +74,11 @@ class PickCubeSim(HabitatSim):
         obj_attr_mgr = self.get_object_template_manager()
         obj_attr_mgr.load_configs(ASSET_DIR)
         # obj_attr_mgr.load_configs("/home/jiayuan/projects/github/habitat-lab/data/objects/ycb/configs")
+        obj_attr_mgr.load_configs(self.YCB_DIR)
+        self.ycb_model_ids = [
+            x.split(".")[0] for x in os.listdir(self.YCB_DIR)
+        ]
+        print(self.ycb_model_ids)
         # print(obj_attr_mgr.get_template_handles())
 
     @property
@@ -167,12 +176,12 @@ class PickCubeSim(HabitatSim):
             scale=[10, 0.01, 10],
             static=True,
         )
-        self.ground.semantic_id=0
+        self.ground.semantic_id = 0
 
         self.cube = self._add_rigid_object(
             "cube", "transform_box", [0, 0.02, 0], scale=[0.01] * 3
         )
-        self.cube.semantic_id=100
+        self.cube.semantic_id = 100
 
         # self.obj1 = self._add_rigid_object("haha", "002_master_chef_can", [0, 0.5, 0])
         # self.obj2 = self._add_rigid_object("haha", "072-a_toy_airplane", [0, 0.5, 0])
@@ -181,8 +190,19 @@ class PickCubeSim(HabitatSim):
         self.rigid_objs["cube"] = self.cube
 
         if self.habitat_config.get("INCLUDE_APT", False):
-            self.scene = self.add_viz_obj(mn.Vector3(0, 0, 0), template_name="frl_apartment_stage_pvizplan_full")
+            self.scene = self.add_viz_obj(
+                mn.Vector3(0, 0, 0),
+                template_name="frl_apartment_stage_pvizplan_full",
+            )
             self.rigid_objs["scene"] = self.scene
+
+        # Comment if you do not want to load YCB
+        for model_id in self.ycb_model_ids:
+            self.rigid_objs[model_id] = self._add_rigid_object(
+                model_id,
+                model_id,
+                np.random.uniform([0.5, 0.5, 0.5], [1, 1, 1]),
+            )
 
     def _remove_rigid_objects(self):
         rigid_obj_mgr = self.get_rigid_object_manager()
